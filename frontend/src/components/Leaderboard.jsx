@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 const Leaderboard = () => {
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
       <h2>Leaderboard</h2>
       {/* Add leaderboard content here */}
     </div>

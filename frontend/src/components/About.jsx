@@ -5,7 +5,7 @@ import "./About.css";
 const About = () => {
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="about-container">
         <h1 className="website-title">Webcode: Online Judge</h1>
         <h2>About</h2>

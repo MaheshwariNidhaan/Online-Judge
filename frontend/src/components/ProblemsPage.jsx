@@ -15,7 +15,7 @@ const ProblemsPage = () => {
 
   return (
     <div className="problems-page">
-      <Navbar />
+      {/* <Navbar /> */}
       <h1>Problems</h1>
       <table className="problems-table">
         <thead>

@@ -23,8 +23,19 @@ function Login() {
         password: password,
       })
       .then((result) => {
-        console.log(result.data.success);
-        if (result.data.success === true) navigate("/about");
+        if (result.data.success) {
+          const token = result.data.token;
+          localStorage.setItem("token", token);
+
+          const userData = JSON.parse(atob(token.split(".")[1]));
+          if (userData.role === "admin") {
+            navigate("/AdminProblemsPage");
+          } else {
+            navigate("/problems");
+          }
+        } else {
+          console.error("Login failed");
+        }
       })
       .catch((err) => {
         console.error("Error during login:", err);
@@ -32,7 +43,7 @@ function Login() {
   };
 
   const handleSignupClick = () => {
-    navigate("/signup"); // Redirect to the signup page
+    navigate("/signup");
   };
 
   return (

@@ -35,7 +35,6 @@ const validateEmail = (email) => {
 };
 
 //REGISTER Functionality
-
 app.post("/signup", async (req, res) => {
   try {
     //get all the data from the frontend(firstname,lastname,...etc)
@@ -69,6 +68,7 @@ app.post("/signup", async (req, res) => {
       lastname,
       email,
       password: hashedPassword, // dont write hashedpassword here...write like password: hashedPassword
+      role: "user", // Default role for newly created users
     });
 
     //generate a token for user and send it to the backend
@@ -93,7 +93,6 @@ app.post("/signup", async (req, res) => {
 });
 
 //LOGIN Functionality
-
 app.post("/login", async (req, res) => {
   try {
     // get data from user
@@ -122,9 +121,13 @@ app.post("/login", async (req, res) => {
     }
 
     //generate a token for user and send it to the backend
-    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: user._id, email, role: user.role },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: "1d",
+      }
+    );
     user.token = token;
     user.password = undefined;
 
@@ -146,6 +149,28 @@ app.post("/login", async (req, res) => {
     console.log(error);
   }
 });
+
+// Middleware functions for authentication and authorization
+const authenticateToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Access denied" });
+
+  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+    if (err) return res.status(403).json({ message: "Invalid token" });
+
+    req.user = user; // Attach user data to request
+    next();
+  });
+};
+
+const authorizeRole = (roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    next();
+  };
+};
 
 // Get all problems
 app.get("/problems", async (req, res) => {
@@ -169,62 +194,96 @@ app.get("/problems/:id", async (req, res) => {
 });
 
 // Create a new problem
-app.post("/problems", async (req, res) => {
-  const problem = new Problem({
-    title: req.body.title,
-    difficulty: req.body.difficulty,
-    statement: req.body.statement,
-    sampleInput1: req.body.sampleInput1,
-    sampleOutput1: req.body.sampleOutput1,
-    sampleInput2: req.body.sampleInput2,
-    sampleOutput2: req.body.sampleOutput2,
-  });
+app.post(
+  "/problems",
+  authenticateToken,
+  authorizeRole(["admin"]),
+  async (req, res) => {
+    console.log("Received Body:", req.body);
 
-  try {
-    const newProblem = await problem.save();
-    res.status(201).json(newProblem);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    const problem = new Problem({
+      title: req.body.title,
+      difficulty: req.body.difficulty,
+      statement: req.body.statement,
+      sampleInput1: req.body.sampleInput1,
+      sampleOutput1: req.body.sampleOutput1,
+      sampleInput2: req.body.sampleInput2,
+      sampleOutput2: req.body.sampleOutput2,
+      hiddenTestCases: req.body.hiddenTestCases,
+    });
+
+    try {
+      const newProblem = await problem.save();
+      res.status(201).json(newProblem);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
   }
-});
+);
 
 // Update an existing problem
-app.patch("/problems/:id", async (req, res) => {
-  try {
-    const problem = await Problem.findById(req.params.id);
-    if (!problem) return res.status(404).json({ message: "Problem not found" });
+app.patch(
+  "/problems/:id",
+  authenticateToken,
+  authorizeRole(["admin"]),
+  async (req, res) => {
+    try {
+      // Find the problem by ID
+      const problem = await Problem.findById(req.params.id);
+      if (!problem)
+        return res.status(404).json({ message: "Problem not found" });
 
-    if (req.body.title != null) problem.title = req.body.title;
-    if (req.body.difficulty != null) problem.difficulty = req.body.difficulty;
-    if (req.body.statement != null) problem.statement = req.body.statement;
-    if (req.body.sampleInput1 != null)
-      problem.sampleInput1 = req.body.sampleInput1;
-    if (req.body.sampleOutput1 != null)
-      problem.sampleOutput1 = req.body.sampleOutput1;
-    if (req.body.sampleInput2 != null)
-      problem.sampleInput2 = req.body.sampleInput2;
-    if (req.body.sampleOutput2 != null)
-      problem.sampleOutput2 = req.body.sampleOutput2;
+      // Update fields if they are present in the request body
+      if (req.body.title != null) problem.title = req.body.title;
+      if (req.body.difficulty != null) problem.difficulty = req.body.difficulty;
+      if (req.body.statement != null) problem.statement = req.body.statement;
+      if (req.body.sampleInput1 != null)
+        problem.sampleInput1 = req.body.sampleInput1;
+      if (req.body.sampleOutput1 != null)
+        problem.sampleOutput1 = req.body.sampleOutput1;
+      if (req.body.sampleInput2 != null)
+        problem.sampleInput2 = req.body.sampleInput2;
+      if (req.body.sampleOutput2 != null)
+        problem.sampleOutput2 = req.body.sampleOutput2;
 
-    const updatedProblem = await problem.save();
-    res.json(updatedProblem);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+      // Handle hidden test cases array
+      if (req.body.hiddenTestCases != null) {
+        // Ensure hiddenTestCases is always an array
+        if (!Array.isArray(req.body.hiddenTestCases)) {
+          return res
+            .status(400)
+            .json({ message: "hiddenTestCases should be an array" });
+        }
+        problem.hiddenTestCases = req.body.hiddenTestCases;
+      }
+
+      // Save the updated problem
+      const updatedProblem = await problem.save();
+      res.json(updatedProblem);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
   }
-});
+);
 
 // Delete a problem
-app.delete("/problems/:id", async (req, res) => {
-  try {
-    const problem = await Problem.findById(req.params.id);
-    if (!problem) return res.status(404).json({ message: "Problem not found" });
+app.delete(
+  "/problems/:id",
+  authenticateToken,
+  authorizeRole(["admin"]),
+  async (req, res) => {
+    try {
+      const problem = await Problem.findById(req.params.id);
+      if (!problem)
+        return res.status(404).json({ message: "Problem not found" });
 
-    await Problem.deleteOne({ _id: req.params.id });
-    res.json({ message: "Problem deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+      await Problem.deleteOne({ _id: req.params.id });
+      res.json({ message: "Problem deleted" });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
   }
-});
+);
 
 // RUN a code(COMPILE functionality)
 app.post("/run", async (req, res) => {
@@ -261,15 +320,22 @@ app.post("/submit", async (req, res) => {
         .json({ success: false, error: "Problem not found!" });
     }
 
-    const { sampleInput1, sampleInput2, sampleOutput1, sampleOutput2 } =
-      problem;
-    const testCases = [
+    const {
+      sampleInput1,
+      sampleInput2,
+      sampleOutput1,
+      sampleOutput2,
+      hiddenTestCases,
+    } = problem;
+
+    const sampleTestCases = [
       { input: sampleInput1, expectedOutput: sampleOutput1 },
       { input: sampleInput2, expectedOutput: sampleOutput2 },
     ];
 
-    const testResults = await Promise.all(
-      testCases.map(async (testCase, index) => {
+    // Process sample test cases
+    const sampleTestResults = await Promise.all(
+      sampleTestCases.map(async (testCase) => {
         const { input, expectedOutput } = testCase;
 
         try {
@@ -285,6 +351,7 @@ app.post("/submit", async (req, res) => {
             expectedOutput,
             actualOutput,
             verdict,
+            isSample: true,
           };
         } catch (testError) {
           return {
@@ -292,33 +359,78 @@ app.post("/submit", async (req, res) => {
             expectedOutput,
             actualOutput: "Error",
             verdict: "Error",
+            isSample: true,
           };
         }
       })
     );
 
-    const overallStatus = testResults.every(
+    // Process hidden test cases
+    const hiddenTestResults = await Promise.all(
+      hiddenTestCases.map(async (hiddenTestCase) => {
+        const { input, output: expectedOutput } = hiddenTestCase;
+
+        try {
+          const inputPath = await generateInputFile(input);
+          const filePath = await generateFile("cpp", code);
+          const actualOutput = await executeCpp(filePath, inputPath);
+
+          const isCorrect = actualOutput.trim() === expectedOutput.trim();
+          const verdict = isCorrect ? "Correct" : "Incorrect";
+
+          return {
+            input,
+            expectedOutput,
+            actualOutput,
+            verdict,
+            isSample: false,
+          };
+        } catch (testError) {
+          return {
+            input,
+            expectedOutput,
+            actualOutput: "Error",
+            verdict: "Error",
+            isSample: false,
+          };
+        }
+      })
+    );
+
+    // Combine all results
+    const allTestResults = [...sampleTestResults, ...hiddenTestResults];
+
+    // Determine overall status
+    const overallStatus = allTestResults.every(
       (result) => result.verdict === "Correct"
     )
       ? "Correct"
       : "Incorrect";
 
-    // Construct submission for each test case result
-    const submissionData = testResults.map((result) => ({
+    // Check if all hidden test cases passed
+    const hiddenTestCasesPassed = hiddenTestResults.every(
+      (result) => result.verdict === "Correct"
+    );
+
+    // Construct submission data
+    const submissionData = allTestResults.map((result) => ({
       code,
       problemId,
       input: result.input,
       expectedOutput: result.expectedOutput,
       output: result.actualOutput,
       status: result.verdict,
+      isSample: result.isSample,
     }));
 
-    // Save all submissions
+    // Save submissions
     const newSubmissions = await Submission.insertMany(submissionData);
 
     res.json({
       success: true,
       submissions: newSubmissions,
+      hiddenTestCasesPassed,
+      overallStatus,
     });
   } catch (error) {
     console.error("Error during submission:", error);

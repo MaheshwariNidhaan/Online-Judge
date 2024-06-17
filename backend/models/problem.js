@@ -30,6 +30,10 @@ const problemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  hiddenTestCases: {
+    type: [{ input: String, output: String }],
+    default: [],
+  },
 });
 
 module.exports = mongoose.model("Problem", problemSchema);

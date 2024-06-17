@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
     default: null,
     required: true,
   },
+  role: { type: String, enum: ["user", "admin"], default: "user" },
 });
 
 module.exports = mongoose.model("user", userSchema); // singular here...in mongoDB it will show Users
