@@ -11,14 +11,15 @@ Welcome to Webcode, an online coding platform designed to help users practice co
 
 ### **Admin Tools**
 - **Problem Administration**: Add, edit, and delete coding problems.
-- **Test Case Management**: Manage test cases for problems.
+- **Test Case Management**: Admin can edit sample test cases and add/delete hidden test cases for a particular problem.
 
 ### **Problem Management**
-- **Problem List**: A curated list of coding problems, categorized by difficulty.
-- **Detailed Problem Statements**: Comprehensive problem descriptions with input/output specifications and example test cases.
+- **Problem List**: A curated list of coding problems, with their difficulty levels displayed.
+- **Detailed Problem Statements**: Comprehensive problem descriptions with input/output specifications and sample test cases.
+- **Hidden Test Cases**: User's code is run against sample(visible to the user) and hidden test cases.
 
 ### **Code Submission**
-- **Online Code Editor**: Write, edit, and submit code in the platform.
+- **Online Code Editor**: Write, edit, and submit code in the platform (Ace editor)
 - **Code Execution**: Secure and isolated code execution environment powered by Docker.
 - **Verdict System**: Automatic evaluation of submissions with verdicts including:
   - **Accepted**: Code meets all requirements.
@@ -26,7 +27,7 @@ Welcome to Webcode, an online coding platform designed to help users practice co
   - **Compilation Error**: Code fails to compile.
 
 ### **Upcoming Features**
-- **Leaderboard Rankings**: Real-time rankings and performance statistics (In Development).
+- **Submissions feature**: Real-time submission details of a problem (In Development).
 
 ## **Tech Stack**
 
@@ -67,8 +68,10 @@ React: JavaScript library for building responsive user interfaces.
 - **Docker**: Containerization for isolated code execution.
 
 ### **Deployment**
-![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/878dccef-2ca8-402a-b64f-40badaadbe9c)
 ![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/afe8f428-aa65-4652-bcdb-f1ae1c3a4cfc)
+![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/878dccef-2ca8-402a-b64f-40badaadbe9c)
+![Screenshot (424)](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/24358fd1-41c0-428e-aed7-4b14a06058ba)
+
 
 
 
@@ -83,6 +86,10 @@ React: JavaScript library for building responsive user interfaces.
 
 ## **Demo**
 [Live Demo](#) (Link to your deployed application)
+
+## **A video of me explaining my project through loom.ai**
+https://www.loom.com/share/1cd3c67fbce849adae68b9274cae7f34
+
 
 ## **Screenshots**
 1. Login Page
