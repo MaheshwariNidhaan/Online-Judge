@@ -3,12 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import "./AdminProblemsPage.css";
 
+// Access the backend URL from environment variables
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const AdminProblemsPage = () => {
   const [problems, setProblems] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5000/problems", {
+    fetch(`${BACKEND_URL}/problems`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -22,7 +25,7 @@ const AdminProblemsPage = () => {
     if (!window.confirm("Are you sure you want to delete this problem?"))
       return;
 
-    fetch(`http://localhost:5000/problems/${id}`, {
+    fetch(`${BACKEND_URL}/problems/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,

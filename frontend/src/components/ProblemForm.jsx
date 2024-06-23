@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./ProblemForm.css";
 
+// Access the backend URL from environment variables
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const ProblemForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -18,7 +21,7 @@ const ProblemForm = () => {
 
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:5000/problems/${id}`, {
+      fetch(`${BACKEND_URL}/problems/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -58,8 +61,8 @@ const ProblemForm = () => {
     e.preventDefault();
 
     const url = id
-      ? `http://localhost:5000/problems/${id}`
-      : "http://localhost:5000/problems";
+      ? `${BACKEND_URL}/problems/${id}`
+      : `${BACKEND_URL}/problems`;
     const method = id ? "PATCH" : "POST";
 
     fetch(url, {

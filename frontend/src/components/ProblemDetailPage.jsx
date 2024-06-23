@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-c_cpp";
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/mode-python";
-import "ace-builds/src-noconflict/theme-github";
+import ace from "ace-builds/src-noconflict/ace";
+import "ace-builds/src-noconflict/ext-language_tools"; // Import language tools for code suggestions
 import "./ProblemDetailPage.css";
+
+// Set the base path to the public directory
+ace.config.set("basePath", "/ace");
+
+// Dynamically import Ace Editor modes and themes
+const loadAceModules = async () => {
+  await import("ace-builds/src-noconflict/mode-c_cpp");
+  await import("ace-builds/src-noconflict/mode-java");
+  await import("ace-builds/src-noconflict/mode-python");
+  await import("ace-builds/src-noconflict/theme-github");
+};
+
+// Access the backend URL from environment variables
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const ProblemDetailPage = () => {
   const { id } = useParams();
@@ -39,7 +51,11 @@ int main() {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:5000/problems/${id}`)
+    loadAceModules();
+  }, []);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/problems/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -72,7 +88,7 @@ int main() {
 
   const handleRunCode = async () => {
     try {
-      const response = await fetch("http://localhost:5000/run", {
+      const response = await fetch(`${BACKEND_URL}/run`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,7 +105,7 @@ int main() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch("http://localhost:5000/submit", {
+      const response = await fetch(`${BACKEND_URL}/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -166,7 +182,13 @@ int main() {
             </select>
           </div>
           <AceEditor
-            mode={language === "py" ? "python" : language}
+            mode={
+              language === "cpp"
+                ? "c_cpp"
+                : language === "py"
+                ? "python"
+                : "java"
+            }
             theme="github"
             onChange={handleCodeChange}
             name="codeEditor"

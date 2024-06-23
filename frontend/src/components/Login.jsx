@@ -3,6 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
+// Access the backend URL from environment variables
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +21,7 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:5000/login", {
+      .post(`${BACKEND_URL}/login`, {
         email: email,
         password: password,
       })

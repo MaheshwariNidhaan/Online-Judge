@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import "./ProblemsPage.css";
 
+// Access the backend URL from environment variables
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const ProblemsPage = () => {
   const [problems, setProblems] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/problems")
+    fetch(`${BACKEND_URL}/problems`)
       .then((response) => response.json())
       .then((data) => setProblems(data))
       .catch((error) => console.error("Error fetching problems:", error));
