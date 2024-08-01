@@ -18,7 +18,24 @@ const cors = require("cors");
 
 DBConnection();
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true })); // Add CORS middleware
+// app.use(cors({ origin: process.env.CLIENT_URL, credentials: true })); // Add CORS middleware
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173", // Including localhost for development purposes
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions)); // Add CORS middleware
 
 app.use(express.json()); // some middelwares
 app.use(express.urlencoded({ extended: true }));
