@@ -52,7 +52,9 @@ React: JavaScript library for building responsive user interfaces.
 ![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/5484fa2a-11fd-478a-8321-2b9f526f4154)
 
 
-- **MongoDB**: NoSQL database for storing user data, problem details, and submissions.
+- **MongoDB**: NoSQL database that stores data in JSON like documents unlike relational databases which uses tables and rows.
+  
+  Stored user data, problem details and submissions.
 
 ### **Security and Containerization**
 ![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/dd7ad125-51f3-483c-b3c1-a21644433319)
@@ -65,7 +67,25 @@ React: JavaScript library for building responsive user interfaces.
 
   
 
-- **Docker**: Containerization for isolated code execution.
+- **Docker**: Allows developers to easily create, run and deploy applications through containers. Conatiners package all the necessary code,     
+  library and dependencies.
+
+  Advantages of using docker in Online Judge :
+  1) Isolation :  Docker containers provide a way to isolate the execution environment of the submitted code. This ensures that the code runs in a controlled environment without affecting the   
+     host system.
+
+  2) Security : Docker containers can be configured to restrict access to system resources, reducing the risk of malicious code harming the server or accessing sensitive information.
+
+  3) Consistency : Docker allows online judges to provide a consistent execution environment regardless of the underlying infrastructure. This ensures that submissions behave predictably across 
+  different servers and environments.
+
+  4) Dependency Management : Docker containers can include specific versions of programming languages, libraries, and dependencies required for code execution. This eliminates issues related to 
+  version compatibility and ensures that the code runs as expected.
+
+  5) Scalability : Docker containers can be easily scaled up or down based on demand. This allows online judges to handle a large number of submissions efficiently, distributing the workload 
+     across multiple containers.
+
+
 
 ### **Deployment**
 ![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/afe8f428-aa65-4652-bcdb-f1ae1c3a4cfc)
@@ -75,17 +95,19 @@ React: JavaScript library for building responsive user interfaces.
 
 
 
-
-- **AWS EC2**: Backend deployment for scalable performance.
 - **AWS ECR**: Container registry for Docker images.
+  Pushed my docker image on AWS ECR.
+- **AWS EC2**: Backend deployment for scalable performance.
+  Created an EC2 linux instance(t2.micro, 1vCPU, 1 GiB Memory) and then fetched the image on EC2 linux instance and run it on the instance.
+
 
   ![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/a8ff1964-e8e9-4303-aa2c-4205a9f3175f)
   
 
 - **Vercel**: Frontend deployment for ease and efficiency.
 
-## **Demo**
-[Live Demo](#) (Link to your deployed application)
+<!--## **Demo**
+[Live Demo](#) (Link to your deployed application)  -->
 
 ## **A video of me explaining my project through loom.ai**
 https://www.loom.com/share/1cd3c67fbce849adae68b9274cae7f34
