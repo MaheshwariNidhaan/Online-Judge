@@ -60,7 +60,13 @@ React: JavaScript library for building responsive user interfaces.
 ![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/dd7ad125-51f3-483c-b3c1-a21644433319)
 
 
-- **JWT Authentication**: Secure authentication mechanism.
+- **JWT Authentication**: Used for securely transmitting information between parties as a JSON object. It is composed of 3 parts separared by dots and they are :
+    
+    i) Header which tells type of token and the signing algorithm being used
+  
+    ii) Payload : What the user will be sending (your information)
+  
+    iii) Signature : Ensures that message wasn.t changed or tampered along the way. Secure authentication mechanism.
 
 ![image](https://github.com/MaheshwariNidhaan/Online-Judge/assets/133689983/2192d77e-2dc3-40ad-8b78-8974025731cd)
 
